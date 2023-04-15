@@ -3,28 +3,37 @@
 #include <string>
 #include <cstring>
 
+
+bool isSubrange(int r1s, int r1e, int r2s, int r2e) {
+    return (r1s <= r2s && r1e >= r2e) || (r1s >= r2s && r1e <= r2e);
+}
+
+
+bool areOverlapping(int r1s, int r1e, int r2s, int r2e) {
+    return (r1s <= r2e) && (r1e >= r2s);
+}
+
 class State {
     private:
-      int current_sum = 0;
-      int max_sum = 0;
-      void finish_block() {
-        if (current_sum > max_sum) max_sum = current_sum;
-        current_sum = 0;
-      }
+      int m_subRanges = 0;
 
     public:
       void process_line(const char* line) {
         printf("%s\n", line);
-        if (std::strlen(line) < 1) {
-            finish_block();
+        uint32_t range1Start, range1End, range2Start, range2End;
+
+        if (sscanf(line, "%u-%u,%u-%u", &range1Start, &range1End, &range2Start, &range2End) != 4) {
+            fprintf(stderr, "error readingin line %s\n", line);
+            exit(EXIT_FAILURE);
         } else {
-            current_sum += std::stoi(line);
+            if (areOverlapping(range1Start, range1End, range2Start, range2End)) {
+                m_subRanges++;
+            }
         }
       }
 
       void finished() {
-        finish_block();
-        printf("max block: %d\n", max_sum);
+        printf("subranges: %d\n", m_subRanges);
       }
 };
 
